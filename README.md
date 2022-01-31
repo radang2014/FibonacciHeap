@@ -12,3 +12,14 @@ Useful structure for storing information in a way that allows for the following 
     DELETE VALUE - O(log n) amortized
     GET VALUE FROM ADDRESS - O(1)
     GET ADDRESS FROM VALUE - O(n)
+
+FILES:
+fib-heap.h: Interface for Fibonacci heap
+fib-heap.cpp: Implementation of Fibonacci heap
+use-heap-example.cpp: Example of how to use Fibonacci heap
+README: This file
+
+COMPILE / RUN INSTRUCTIONS:
+To compile the example code, type: g++ -o use-heap-example -Wall -Wextra fib-heap.cpp use-heap-example.cpp
+To run the example code, type: ./use-heap-example
+There should be no output.
