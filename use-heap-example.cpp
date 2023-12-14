@@ -4,7 +4,7 @@
  * 
  * Provides examples for ways a Fibonacci Heap can be used.
  * Note that Fibonacci Heaps are most useful for storing 
- * edge values to decrease the runtime of Dijkstra's Shortest
+ * edge values to decrease the big-O runtime of Dijkstra's Shortest
  * Path and Prim's Minimum Spanning Tree algorithms.
  * 
  * Some examples use assert() statements to show the expected

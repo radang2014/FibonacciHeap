@@ -26,10 +26,7 @@
  * be passed back into functions of this class. 
  */
 
-#include <iostream>
-#include <string>
 #include <vector>
-#include <queue>
 #include <unordered_map>
 
 typedef int FibHeap_ElemType;
@@ -63,7 +60,8 @@ class FibHeap {
         // Print contents of fibonacci heap
         void print();
 
-        // Checks if heap is valid, i.e. does not violate internal invariants
+        // Checks if heap is valid, i.e. does not violate internal invariants 
+        // (should always return true unless there is an implementation bug)
         bool valid();
 
     private:

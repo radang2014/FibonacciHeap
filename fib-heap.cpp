@@ -11,6 +11,9 @@
 
 #include "fib-heap.h"
 
+#include <iostream>
+#include <queue>
+
 using namespace std;
 
 // default constructor
@@ -30,6 +33,15 @@ FibHeap::FibHeap()
  */
 FibHeap::FibHeap(FibHeap_ElemType *arr, int size)
 {
+    if (arr == nullptr) {
+        cerr << "Cannot make a fibonacci heap out of a null array." << endl;
+        exit(EXIT_FAILURE);
+    }
+    if (size < 0) {
+        cerr << "Cannot make a fibonacci heap out of an array with negative size." << endl;
+        exit(EXIT_FAILURE);
+    }
+
     front = nullptr;
     min = nullptr;
     numElems = 0;
@@ -275,10 +287,10 @@ void FibHeap::delete_elem(FibHeap_ElemAddr addr)
 }
 
 /* 
- * Changes the node at inputted address to a different 
- * value. The new value may be at a different address,
- * so the new address of the modified value is 
- * returned.
+ * Changes the node at `*addr_p` to a different value. 
+ * The address of the node may change over the course 
+ * of the function, and `*addr_p` will be updated if 
+ * this is the case.
  */
 void FibHeap::change_val(FibHeap_ElemAddr *addr_p, FibHeap_ElemType value)
 {
