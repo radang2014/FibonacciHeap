@@ -17,14 +17,13 @@
  *    GET VALUE FROM ADDRESS - O(1)
  *    GET ADDRESS FROM VALUE - O(n)
  * 
- * The Node struct definition is left public to allow the client to store 
- * node addresses as desired. This could be useful for implementing 
- * Dijkstra's Algorithm, as the Fibonacci heap node address storing 
- * the weight of an edge can be directly stored in an adjacency list. This 
- * does, however, allow the client to make direct modifications to the 
- * node data members. This interface and implementation assumes that the 
- * client will NOT modify any data members directly and will only store 
- * node addresses and pass node addresses back into functions of this class.
+ * FibHeap_ElemAddr is a type given to the client to allow for storing of 
+ * element addresses as desired. This could be useful for implementing 
+ * Dijkstra's Algorithm, as the Fibonacci heap address storing 
+ * the weight of an edge can be directly stored in an adjacency list. 
+ * In order for this to work, the client should NOT modify anything pointed 
+ * to by the address directly; addresses will only be used as handles to 
+ * be passed back into functions of this class. 
  */
 
 #include <iostream>
@@ -33,35 +32,14 @@
 #include <queue>
 #include <unordered_map>
 
-typedef int ElemType;
-
-/* A node in the fibonacci heap storing an element. 
- *
- * NOTE: It is expected that the client will be well-behaved 
- *       and ONLY use returned Node * to store addresses and pass 
- *       back into functions of this class.
- *
- * value = element stored in node
- * loser = has node lost a child?
- * parent = pointer to node's parent in tree; nullptr if root
- * childIndex = index of node in parent's array of children; -1 if root
- * numChildren = number of children current node has
- */
-struct Node {
-    ElemType value;
-
-    bool loser;
-    Node *parent;
-    int childIndex;
-    std::vector<Node *> children;
-    int numChildren;
-};
+typedef int FibHeap_ElemType;
+typedef void *FibHeap_ElemAddr;
 
 class FibHeap {
     public:
         // Constructors, Destructor, Assignment Operator Overload
         FibHeap();
-        FibHeap(ElemType *arr, int size);
+        FibHeap(FibHeap_ElemType *arr, int size);
         ~FibHeap();
         FibHeap(FibHeap &other);
         FibHeap &operator =(FibHeap &rhs);
@@ -69,26 +47,43 @@ class FibHeap {
         // Retrieve information
         bool isEmpty();
         int size();
-        ElemType get_min();
-        ElemType get_value(Node *node);
-        Node *get_address(ElemType value);
+        FibHeap_ElemType get_min();
+        FibHeap_ElemType get_value(FibHeap_ElemAddr addr);
+        FibHeap_ElemAddr get_address(FibHeap_ElemType value);
         
         // Modify fibonacci heap
-        Node *insert(ElemType value);
-        ElemType remove_min();
-        void decrease_val(Node *node, ElemType value);
-        void delete_node(Node *node);
-        Node *change_val(Node *node, ElemType value);
+        FibHeap_ElemAddr insert(FibHeap_ElemType value);
+        FibHeap_ElemType remove_min();
+        void decrease_val(FibHeap_ElemAddr addr, FibHeap_ElemType value);
+        void delete_elem(FibHeap_ElemAddr addr);
+        void change_val(FibHeap_ElemAddr *addr_p, FibHeap_ElemType value);
         void merge(FibHeap &other);
         void clear();
 
         // Print contents of fibonacci heap
         void print();
 
-        // Checks if heap is valid, i.e. does not violate invariants
+        // Checks if heap is valid, i.e. does not violate internal invariants
         bool valid();
 
     private:
+        /* A node in the fibonacci heap storing an element: 
+         * value = element stored in node
+         * loser = has node lost a child?
+         * parent = pointer to node's parent in tree; nullptr if root
+         * childIndex = index of node in parent's array of children; -1 if root
+         * numChildren = number of children current node has
+         */
+        struct Node {
+            FibHeap_ElemType value;
+
+            bool loser;
+            Node *parent;
+            int childIndex;
+            std::vector<Node *> children;
+            int numChildren;
+        };
+
         // Stores pointers to roots of trees in a ring structure
         struct RingNode {
             Node *root;
@@ -106,14 +101,14 @@ class FibHeap {
         std::unordered_map<Node *, RingNode *> roots;
 
         // Helper functions
-        Node *newNode(ElemType value);
+        Node *newNode(FibHeap_ElemType value);
         void delete_subtree(Node *root);
         Node *copy_subtree(Node *root);
         RingNode *merge_trees(RingNode *r_tree1, RingNode *r_tree2);
         void add_root(Node *root);
         void remove_ringnode(RingNode *ringNode);
         void copy_instance(FibHeap &other);
-        Node *find_in_subtree(Node *node, ElemType value);
+        Node *find_in_subtree(Node *node, FibHeap_ElemType value);
 
         // Helper functions for printing aspects of the fibonacci heap
         void print_subtree(Node *root);

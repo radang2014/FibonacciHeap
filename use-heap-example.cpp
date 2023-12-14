@@ -35,7 +35,7 @@ int main() {
      * of a value, but that will cause operations to 
      * take at least linear time.
      */
-    unordered_map<int, Node *> address_map;
+    unordered_map<int, FibHeap_ElemAddr> address_map;
 
     /* Create an empty Fibonacci Heap */
     FibHeap heap1;
@@ -88,7 +88,7 @@ int main() {
      * for clients to store addresses themselves in the appropriate
      * structure if possible.
      */
-    Node *addr = heap2.get_address(4);
+    FibHeap_ElemAddr addr = heap2.get_address(4);
 
     /* 
      * Get the value of a Node when given the address. The example
@@ -130,16 +130,16 @@ int main() {
     assert(heap1.get_value(address_map[2]) == 2);
 
     /* Change the value 2 back to the value 44. */
-    addr = heap1.change_val(address_map[2], 44);
+    heap1.change_val(&address_map[2], 44);
     /* Update address_map to sync with state of heap */
-    address_map.insert({44, addr});
+    address_map.insert({44, address_map[2]});
     address_map.erase(2);
     assert(heap1.get_address(44) == address_map[44]);
     assert(heap1.get_value(address_map[44]) == 44);
 
     /* Remove nodes containing 3 and 8 from the heap */
-    heap1.delete_node(address_map[3]);
-    heap1.delete_node(address_map[8]);
+    heap1.delete_elem(address_map[3]);
+    heap1.delete_elem(address_map[8]);
     /* Update address_map to sync with state of heap */
     address_map.erase(3);
     address_map.erase(8);

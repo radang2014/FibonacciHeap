@@ -23,12 +23,12 @@ FibHeap::FibHeap()
 }
 
 /* 
- * Secondary structure; constructs a 
+ * Secondary constructor; constructs a 
  * fibonacci heap using elements in inputted
  * array. Inputted size should be the size 
  * of the array.
  */
-FibHeap::FibHeap(ElemType *arr, int size)
+FibHeap::FibHeap(FibHeap_ElemType *arr, int size)
 {
     front = nullptr;
     min = nullptr;
@@ -38,7 +38,6 @@ FibHeap::FibHeap(ElemType *arr, int size)
     for (int i = 0; i < size; i++) {
         insert(arr[i]);
     }
-    maxDegree = 1;
 }
 
 // destructor
@@ -88,7 +87,7 @@ int FibHeap::size()
 /*
  * Retrieves the value of the minimum element in the fibonacci heap
  */
-ElemType FibHeap::get_min()
+FibHeap_ElemType FibHeap::get_min()
 {
     if (isEmpty()) {
         cerr << "Heap is empty -- cannot get the minimum element" << endl;
@@ -100,8 +99,10 @@ ElemType FibHeap::get_min()
 /*
  * Retrieves the value stored at a specific address
  */
-ElemType FibHeap::get_value(Node *node)
+FibHeap_ElemType FibHeap::get_value(FibHeap_ElemAddr addr)
 {
+    Node *node = (Node *)addr;
+
     if (node == nullptr) {
         cerr << "Cannot get the value of a null node" << endl;
         exit(EXIT_FAILURE);
@@ -117,7 +118,7 @@ ElemType FibHeap::get_value(Node *node)
  * if addresses were instead stored by the client in the appropriate
  * structure.
  */
-Node *FibHeap::get_address(ElemType value)
+FibHeap_ElemAddr FibHeap::get_address(FibHeap_ElemType value)
 {
     if (front != nullptr) {
         // Search in first tree
@@ -142,7 +143,7 @@ Node *FibHeap::get_address(ElemType value)
  * Inserts an element into the fibonacci heap and returns a pointer 
  * to the node storing that element.
  */
-Node *FibHeap::insert(ElemType value)
+FibHeap_ElemAddr FibHeap::insert(FibHeap_ElemType value)
 {
     // Insert value into root of a new tree
     Node *root = newNode(value);
@@ -152,14 +153,14 @@ Node *FibHeap::insert(ElemType value)
     return root;
 }
 
-ElemType FibHeap::remove_min()
+FibHeap_ElemType FibHeap::remove_min()
 {
     if (isEmpty()) {
         cerr << "Heap is empty -- cannot remove the minimum element" << endl;
         exit(EXIT_FAILURE);
     }
 
-    ElemType old_min = get_min();
+    FibHeap_ElemType old_min = get_min();
 
     // Promote all children of minimum to roots
     Node *minNode = min->root;
@@ -215,8 +216,10 @@ ElemType FibHeap::remove_min()
  * inputted new value. The inputted new value is expected 
  * to be less than the value currently held at that address.
  */
-void FibHeap::decrease_val(Node *node, ElemType value)
+void FibHeap::decrease_val(FibHeap_ElemAddr addr, FibHeap_ElemType value)
 {
+    Node *node = (Node *)addr;
+
     if (node == nullptr) {
         cerr << "Cannot decrease the value of a null node" << endl;
         exit(EXIT_FAILURE);
@@ -263,8 +266,10 @@ void FibHeap::decrease_val(Node *node, ElemType value)
 /*
  * Deletes node at inputted address from heap
  */
-void FibHeap::delete_node(Node *node)
+void FibHeap::delete_elem(FibHeap_ElemAddr addr)
 {
+    Node *node = (Node *)addr;
+
     decrease_val(node, get_min() - 1);
     remove_min();
 }
@@ -275,15 +280,16 @@ void FibHeap::delete_node(Node *node)
  * so the new address of the modified value is 
  * returned.
  */
-Node *FibHeap::change_val(Node *node, ElemType value)
+void FibHeap::change_val(FibHeap_ElemAddr *addr_p, FibHeap_ElemType value)
 {
+    Node *node = (Node *)*addr_p;
+
     if (value < node->value) {
         decrease_val(node, value);
     } else if (value > node->value) {
-        delete_node(node);
-        return insert(value);
+        delete_elem(node);
+        *addr_p = insert(value);
     }
-    return node;
 }
 
 /* 
@@ -392,7 +398,7 @@ void FibHeap::print()
  * Create new node holding inputted value 
  * and return pointer to that node 
  */
-Node *FibHeap::newNode(ElemType value)
+FibHeap::Node *FibHeap::newNode(FibHeap_ElemType value)
 {
     Node *result = new Node;
     result->value = value;
@@ -421,7 +427,7 @@ void FibHeap::delete_subtree(Node *root)
 /*
  * Copy subtree starting at inputted node and return pointer to copy
  */
-Node *FibHeap::copy_subtree(Node *root)
+FibHeap::Node *FibHeap::copy_subtree(Node *root)
 {
     if (root == nullptr) {
         return nullptr;
@@ -550,7 +556,7 @@ void FibHeap::copy_instance(FibHeap &other)
  * Searches in subtree of inputted node for value. Returns address if value exists,
  * and returns nullptr if value does not exist.
  */
-Node *FibHeap::find_in_subtree(Node *node, ElemType value)
+FibHeap::Node *FibHeap::find_in_subtree(Node *node, FibHeap_ElemType value)
 {
     if (node != nullptr and node->value <= value) {
         if (node->value == value) {
